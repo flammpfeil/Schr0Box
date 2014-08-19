@@ -1,0 +1,7 @@
+//-----------ENTITY-----------//
+entity.schr0box.livingutility.LivingChest_Follow.name=Living Follow Chest
+entity.schr0box.livingutility.LivingChest_Collect.name=Living Collect Chest
+
+//-----------ITEM-----------//
+item.itemHomePointTicket.name=Home Point Ticket
+item.itemUtilityCore.name=Utility Core
