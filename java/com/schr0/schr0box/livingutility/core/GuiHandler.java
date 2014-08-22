@@ -1,7 +1,5 @@
 package com.schr0.schr0box.livingutility.core;
 
-import java.util.List;
-
 import com.schr0.schr0box.livingutility.LivingUtility;
 import com.schr0.schr0box.livingutility.entity.chest.EntityLivingChest_Base;
 import com.schr0.schr0box.livingutility.entity.chest.EntityLivingChest_Collect;
@@ -10,11 +8,12 @@ import com.schr0.schr0box.livingutility.entity.chest.gui.GuiInventoryLivingChest
 import com.schr0.schr0box.livingutility.entity.chest.gui.GuiInventoryLivingChest_Follow;
 import com.schr0.schr0box.livingutility.entity.chest.inventory.container.ContainerInventoryLivingChest_Collect;
 import com.schr0.schr0box.livingutility.entity.chest.inventory.container.ContainerInventoryLivingChest_Follow;
-
+import cpw.mods.fml.common.network.IGuiHandler;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.World;
-import cpw.mods.fml.common.network.IGuiHandler;
+
+import java.util.List;
 
 public class GuiHandler implements IGuiHandler
 {
@@ -27,7 +26,7 @@ public class GuiHandler implements IGuiHandler
 	{
 	    List list = world.getEntitiesWithinAABB(EntityLivingChest_Base.class, AxisAlignedBB.getBoundingBox(x - 1, y - 1, z - 1, x + 1, y + 1, z + 1));
 
-	    if (list.isEmpty() == false)
+	    if (!list.isEmpty())
 	    {
 		if (list.get(0) instanceof EntityLivingChest_Follow)
 		{
