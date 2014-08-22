@@ -52,7 +52,7 @@ public class GuiHandler implements IGuiHandler
 	{
 	    List list = world.getEntitiesWithinAABB(EntityLivingChest_Base.class, AxisAlignedBB.getBoundingBox(x - 1, y - 1, z - 1, x + 1, y + 1, z + 1));
 
-	    if (list.isEmpty() == false)
+	    if (!list.isEmpty())
 	    {
 		if (list.get(0) instanceof EntityLivingChest_Follow)
 		{
