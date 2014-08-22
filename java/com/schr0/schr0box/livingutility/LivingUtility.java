@@ -1,22 +1,13 @@
 package com.schr0.schr0box.livingutility;
 
-import java.io.File;
-
-import net.minecraft.creativetab.CreativeTabs;
-import net.minecraft.init.Blocks;
-import net.minecraft.init.Items;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraftforge.common.config.Configuration;
-import net.minecraftforge.oredict.ShapedOreRecipe;
-
 import com.schr0.schr0box.livingutility.core.GuiHandler;
+import com.schr0.schr0box.livingutility.entity.chest.EntityLivingChestEnder_Collect;
+import com.schr0.schr0box.livingutility.entity.chest.EntityLivingChestEnder_Follow;
 import com.schr0.schr0box.livingutility.entity.chest.EntityLivingChest_Collect;
 import com.schr0.schr0box.livingutility.entity.chest.EntityLivingChest_Follow;
 import com.schr0.schr0box.livingutility.item.ItemHomePointTicket;
 import com.schr0.schr0box.livingutility.item.ItemUtilityCore;
 import com.schr0.schr0box.livingutility.proxy.ServerProxy;
-
 import cpw.mods.fml.common.FMLLog;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.SidedProxy;
@@ -28,6 +19,15 @@ import cpw.mods.fml.common.registry.EntityRegistry;
 import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.init.Blocks;
+import net.minecraft.init.Items;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraftforge.common.config.Configuration;
+import net.minecraftforge.oredict.ShapedOreRecipe;
+
+import java.io.File;
 
 @Mod(modid = LivingUtility.MODID, version = LivingUtility.VERSION)
 public class LivingUtility
@@ -52,6 +52,7 @@ public class LivingUtility
 
     // GUIのID
     public static int CHEST_GUI_ID = 0;
+    public static int ENDER_CHEST_GUI_ID = 1;
 
     // CreativeTabs
     public static final CreativeTabs tab_LivingUtility = new CreativeTabs("Living Utility")
@@ -131,6 +132,9 @@ public class LivingUtility
 	// mod内での同期ID
 	int livingChest_Follow_ID = 0;
 	int livingChest_Collect_ID = 1;
+        //EnderChestのID
+        int livingChestEnder_Follow_ID = 2;
+        int livingCHestEnder_Collect_ID = 3;
 
 	// -----registerModEntityの引数-----//
 	// 1 Entityのclass
@@ -142,6 +146,10 @@ public class LivingUtility
 	// 7 速度情報を持つか否か
 	EntityRegistry.registerModEntity(EntityLivingChest_Follow.class, "LivingChest_Follow", livingChest_Follow_ID, this, 250, 1, true);
 	EntityRegistry.registerModEntity(EntityLivingChest_Collect.class, "LivingChest_Collect", livingChest_Collect_ID, this, 250, 1, true);
+        //EnderChestの登録
+        EntityRegistry.registerModEntity(EntityLivingChestEnder_Follow.class, "LivingChestEnder_Follow", livingChestEnder_Follow_ID, this, 250, 1, true);
+        EntityRegistry.registerModEntity(EntityLivingChestEnder_Collect.class, "LivingChestEnder_Collect", livingCHestEnder_Collect_ID, this, 250, 1, true);
+
 
 	// クライアントでの処理
 	this.proxy.registerClient();
