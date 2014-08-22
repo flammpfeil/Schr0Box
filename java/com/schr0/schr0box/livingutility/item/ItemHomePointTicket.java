@@ -1,18 +1,17 @@
 package com.schr0.schr0box.livingutility.item;
 
-import java.util.List;
-
 import com.schr0.schr0box.livingutility.LivingUtility;
-
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntityHopper;
-import net.minecraft.util.ChatComponentTranslation;
+import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
+
+import java.util.List;
 
 public class ItemHomePointTicket extends Item
 {
@@ -27,7 +26,7 @@ public class ItemHomePointTicket extends Item
 
     // レアエフェクト
     @Override
-    public boolean hasEffect(ItemStack par1ItemStack)
+    public boolean hasEffect(ItemStack par1ItemStack, int pass)
     {
 	NBTTagCompound nbt = par1ItemStack.getTagCompound();
 
@@ -35,14 +34,15 @@ public class ItemHomePointTicket extends Item
 	{
 	    return false;
 	}
-
-	if (nbt.getTag("TargetName") != null)
-	{
-	    return true;
-	} else
-	{
-	    return false;
-	}
+        //簡略化
+        return nbt.getTag("TargetName") != null;
+//	if (nbt.getTag("TargetName") != null)
+//	{
+//	    return true;
+//	} else
+//	{
+//	    return false;
+//	}
     }
 
     // アイテム情報の表示
@@ -149,7 +149,7 @@ public class ItemHomePointTicket extends Item
 
 	    // メッセージを表示
 	    String info = "Set Home Inventory -> " + StatCollector.translateToLocal(inventory.getInventoryName());
-	    player.addChatComponentMessage(new ChatComponentTranslation(info, new Object[0]));
+	    player.addChatComponentMessage(new ChatComponentText(info));
 
 	    // 音を出す
 	    world.playSoundAtEntity(player, "random.pop", 1.0F, 1.0F);
