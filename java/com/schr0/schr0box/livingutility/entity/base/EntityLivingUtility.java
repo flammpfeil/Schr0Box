@@ -5,13 +5,17 @@ import net.minecraft.entity.EntityAgeable;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.passive.EntityTameable;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.pathfinding.PathEntity;
 import net.minecraft.util.ChatComponentTranslation;
 import net.minecraft.world.World;
 
 public abstract class EntityLivingUtility extends EntityTameable
 {
+    //必要あれば適に変えて
+    private final static int UTIL_STACK = 30;
     // プレイヤー
     private EntityPlayer thePlayer;
 
@@ -43,8 +47,33 @@ public abstract class EntityLivingUtility extends EntityTameable
     // ------------------------- ↓独自の実装↓ -------------------------//
 
     // 元となったUtility（ItemStack）のget
-    public abstract ItemStack getUtility();
-
+    public ItemStack getUtility(){
+        return this.getDataWatcher().getWatchableObjectItemStack(UTIL_STACK);
+    }
+    //読み込みNBT
+    @Override
+    public void readEntityFromNBT(NBTTagCompound nbt) {
+        super.readEntityFromNBT(nbt);
+        this.setUtility(ItemStack.loadItemStackFromNBT((NBTTagCompound) nbt.getTag("utilstack")));
+    }
+    //保存NBT
+    @Override
+    public void writeEntityToNBT(NBTTagCompound nbt) {
+        super.writeEntityToNBT(nbt);
+        NBTTagCompound utilnbt = new NBTTagCompound();
+        this.getUtility().writeToNBT(utilnbt);
+        nbt.setTag("utilstack", utilnbt);
+    }
+    //鯖蔵同期用
+    @Override
+    protected void entityInit() {
+        super.entityInit();
+        this.getDataWatcher().addObject(UTIL_STACK, new ItemStack(Blocks.stone));
+    }
+    // 元となったUtility（ItemStack）のset
+    public void setUtility(ItemStack is) {
+        this.getDataWatcher().updateObject(UTIL_STACK, is);
+    }
     // 取引をしている間の判定
     public boolean isTrading()
     {
