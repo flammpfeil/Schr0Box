@@ -68,11 +68,4 @@ public class EntityLivingChest_Follow extends EntityLivingChest_Base
 
     // ------------------------- ↓独自の実装↓ -------------------------//
 
-    // 元となったUtility（ItemStack）のget
-    @Override
-    public ItemStack getUtility()
-    {
-	return new ItemStack(Blocks.chest);
-    }
-
 }

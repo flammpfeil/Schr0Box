@@ -73,13 +73,6 @@ public class EntityLivingChest_Collect extends EntityLivingChest_Base
 
     // ------------------------- ↓独自の実装↓ -------------------------//
 
-    // 元となったUtility（ItemStack）のget
-    @Override
-    public ItemStack getUtility()
-    {
-	return new ItemStack(Blocks.trapped_chest);
-    }
-
     // 地点登録のItemStack
     public ItemStack getHomePointItem()
     {

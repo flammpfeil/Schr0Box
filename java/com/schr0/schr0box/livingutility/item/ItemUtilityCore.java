@@ -90,10 +90,6 @@ public class ItemUtilityCore extends Item
     private boolean createEntityLivingChest(Class<? extends EntityLivingChest_Base> clazz, ItemStack stack, EntityPlayer player, World world, TileEntityChest tileChest, int x, int y, int z) {
         try {
             EntityLivingChest_Base entityChest = clazz.getConstructor(World.class).newInstance(world);
-            //生成元のアイテムをセット
-            ItemStack material=stack.copy();
-            material.stackSize=1;
-            entityChest.setUtility(material);
             // followChestのinventory呼び出し
             entityChest.inventory.openInventory();
 
@@ -111,7 +107,9 @@ public class ItemUtilityCore extends Item
             // tileChestの更新
             tileChest.updateContainingBlockInfo();
             tileChest.checkForAdjacentChests();
-
+            //生成元のアイテムをセット
+            ItemStack material=new ItemStack(world.getBlock(x, y, z),1,world.getBlockMetadata(x, y, z));
+            entityChest.setUtility(material);
             // ブロックの破壊
             world.func_147480_a(x, y, z, false);
 
@@ -211,8 +209,7 @@ public class ItemUtilityCore extends Item
     private boolean createEntityLivingChestEnder_Follow(ItemStack stack, EntityPlayer player, World world, int x, int y, int z) {
         EntityLivingChestEnder_Follow followChest = new EntityLivingChestEnder_Follow(world);
         //生成元のアイテムをセット
-        ItemStack material=stack.copy();
-        material.stackSize=1;
+        ItemStack material=new ItemStack(world.getBlock(x, y, z),1,world.getBlockMetadata(x, y, z));
         followChest.setUtility(material);
         // ブロックの破壊
         world.func_147480_a(x, y, z, false);
