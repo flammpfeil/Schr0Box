@@ -3,37 +3,45 @@ package com.schr0.schr0box.livingutility.entity.chest.inventory.container;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.Container;
+import net.minecraft.inventory.InventoryEnderChest;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 
-import com.schr0.schr0box.livingutility.entity.chest.EntityLivingChest_Follow;
+import com.schr0.schr0box.livingutility.LivingUtility;
+import com.schr0.schr0box.livingutility.entity.chest.EntityLivingChest_Ender;
 import com.schr0.schr0box.livingutility.entity.chest.inventory.EquipmentLivingChest;
-import com.schr0.schr0box.livingutility.entity.chest.inventory.InventoryLivingChest;
+import com.schr0.schr0box.livingutility.entity.chest.inventory.SpecialItemsLivingChest;
 
-public class ContainerInventoryLivingChest_Follow extends Container
+/**
+ * Created by A.K. on 14/08/22.
+ */
+public class ContainerLivingChest_Ender extends Container
 {
-    private EntityLivingChest_Follow theFollowChest;
-    private InventoryLivingChest theFollowChestInventory;
-    private EquipmentLivingChest theFollowChestEquipment;
+    private EntityLivingChest_Ender enderChest;
+    private InventoryEnderChest playerEnderChest;
+    private EquipmentLivingChest enderChestEquipment;
+    private SpecialItemsLivingChest enderChestSpecialItems;
 
-    public ContainerInventoryLivingChest_Follow(InventoryPlayer inventoryPlayer, EntityLivingChest_Follow livingFollowChest)
+    public ContainerLivingChest_Ender(InventoryPlayer inventoryPlayer, EntityLivingChest_Ender livingchestender)
     {
-	int numRows = livingFollowChest.inventory.getSizeInventory() / 9;
+	this.enderChest = livingchestender;
+	int numRows = livingchestender.inventory.getSizeInventory() / 9;
 	int slotX = 8;
 	int slotY = 0;
 
-	this.theFollowChest = livingFollowChest;
-	this.theFollowChestInventory = livingFollowChest.inventory;
-	this.theFollowChestEquipment = livingFollowChest.equipment;
+	this.playerEnderChest = (livingchestender.getOwner() instanceof EntityPlayer) ? ((EntityPlayer) livingchestender.getOwner()).getInventoryEnderChest() : null;
+	this.enderChestEquipment = livingchestender.equipment;
+	this.enderChestSpecialItems = livingchestender.specialItems;
 
-	livingFollowChest.inventory.load();
-	livingFollowChest.equipment.load();
+	this.playerEnderChest.openInventory();
+	this.enderChestEquipment.load();
+	this.enderChestSpecialItems.load();
 
 	// スロットを設置
 	// addSlotToContainer( Slot(IInventory, slotIndex,xDisplayPosition, yDisplayPosition) )
 
 	// 手持ちのアイテム
-	this.addSlotToContainer(new Slot(theFollowChest.equipment, 0, 127, 46)
+	this.addSlotToContainer(new Slot(this.enderChestEquipment, 0, 109, 46)
 	{
 	    @Override
 	    public int getSlotStackLimit()
@@ -41,9 +49,8 @@ public class ContainerInventoryLivingChest_Follow extends Container
 		return 1;
 	    }
 	});
-
 	// 頭装備
-	this.addSlotToContainer(new Slot(theFollowChest.equipment, 1, 8, 17)
+	this.addSlotToContainer(new Slot(this.enderChestEquipment, 1, 8, 17)
 	{
 	    @Override
 	    public int getSlotStackLimit()
@@ -62,7 +69,7 @@ public class ContainerInventoryLivingChest_Follow extends Container
 	});
 
 	// 手装備
-	this.addSlotToContainer(new Slot(theFollowChest.equipment, 2, 8, 53)
+	this.addSlotToContainer(new Slot(this.enderChestEquipment, 2, 8, 53)
 	{
 	    @Override
 	    public int getSlotStackLimit()
@@ -81,7 +88,7 @@ public class ContainerInventoryLivingChest_Follow extends Container
 	});
 
 	// 足装備
-	this.addSlotToContainer(new Slot(theFollowChest.equipment, 3, 81, 17)
+	this.addSlotToContainer(new Slot(this.enderChestEquipment, 3, 81, 17)
 	{
 	    @Override
 	    public int getSlotStackLimit()
@@ -100,7 +107,7 @@ public class ContainerInventoryLivingChest_Follow extends Container
 	});
 
 	// 靴装備
-	this.addSlotToContainer(new Slot(theFollowChest.equipment, 4, 81, 53)
+	this.addSlotToContainer(new Slot(this.enderChestEquipment, 4, 81, 53)
 	{
 	    @Override
 	    public int getSlotStackLimit()
@@ -118,13 +125,29 @@ public class ContainerInventoryLivingChest_Follow extends Container
 
 	});
 
-	// LivingChestインベントリ（3 * 9）
+	// 座標地点登録用
+	this.addSlotToContainer(new Slot(this.enderChestSpecialItems, 0, 145, 47)
+	{
+	    @Override
+	    public boolean isItemValid(ItemStack p_75214_1_)
+	    {
+		return super.isItemValid(p_75214_1_) && !this.getHasStack() && p_75214_1_.getItem() == LivingUtility.item_HomePointTicket;
+	    }
+
+	    @Override
+	    public int getSlotStackLimit()
+	    {
+		return 1;
+	    }
+	});
+
+	// LivingChestEnderインベントリ（3 * 9）
 	for (int slotCol = 0; slotCol < numRows; ++slotCol)
 	{
 	    for (int slotRow = 0; slotRow < 9; ++slotRow)
 	    {
 		slotY = 75;
-		this.addSlotToContainer(new Slot(livingFollowChest.inventory, (slotRow + slotCol * 9), (slotX + slotRow * 18), (slotY + slotCol * 18)));
+		this.addSlotToContainer(new Slot(this.playerEnderChest, (slotRow + slotCol * 9), (slotX + slotRow * 18), (slotY + slotCol * 18)));
 	    }
 	}
 
@@ -152,7 +175,7 @@ public class ContainerInventoryLivingChest_Follow extends Container
     @Override
     public boolean canInteractWith(EntityPlayer entityplayer)
     {
-	return this.theFollowChestInventory.isUseableByPlayer(entityplayer) && this.theFollowChest.isEntityAlive() && this.theFollowChest.getDistanceToEntity(entityplayer) < 8.0F;
+	return this.playerEnderChest != null && this.playerEnderChest.isUseableByPlayer(entityplayer) && this.enderChest.isEntityAlive() && this.enderChest.getDistanceToEntity(entityplayer) < 8.0F;
     }
 
     // Shift+左クリックしたときの処理
@@ -171,8 +194,8 @@ public class ContainerInventoryLivingChest_Follow extends Container
 	    ItemStack destItemStack = slot.getStack();
 	    srcItemStack = destItemStack.copy();
 
-	    int minSlotSize = 5;
-	    int maxSlotSize = this.theFollowChestInventory.getSizeInventory() + minSlotSize;
+	    int minSlotSize = 6;
+	    int maxSlotSize = this.playerEnderChest.getSizeInventory() + minSlotSize;
 
 	    // 上インベントリ内なら, 下のインベントリに移動.
 	    if (slotIndex < maxSlotSize && !this.mergeItemStack(destItemStack, maxSlotSize, this.inventorySlots.size(), false))
@@ -190,7 +213,8 @@ public class ContainerInventoryLivingChest_Follow extends Container
 	    if (destItemStack.stackSize == 0)
 	    {
 		slot.putStack((ItemStack) null);
-	    } else
+	    }
+	    else
 	    {
 		// スロット更新通知
 		slot.onSlotChanged();
@@ -200,11 +224,21 @@ public class ContainerInventoryLivingChest_Follow extends Container
 	return srcItemStack;
     }
 
+    // 閉じる際に呼ばれる処理
     @Override
     public void onContainerClosed(EntityPlayer p_75134_1_)
     {
 	super.onContainerClosed(p_75134_1_);
-	this.theFollowChestInventory.save();
-	this.theFollowChestEquipment.save();
+
+	// Traderの初期化
+	this.enderChest.setTrader((EntityPlayer) null);
+
+	// 各種インベントリのsave
+	if (this.playerEnderChest != null)
+	{
+	    this.playerEnderChest.markDirty();
+	}
+	this.enderChestEquipment.save();
+	this.enderChestSpecialItems.save();
     }
 }

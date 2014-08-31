@@ -1,24 +1,23 @@
 package com.schr0.schr0box.livingutility.entity.chest.inventory;
 
-import com.schr0.schr0box.livingutility.entity.chest.EntityLivingChest_Base;
-
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
+
+import com.schr0.schr0box.livingutility.entity.chest.EntityLivingChest;
 
 public class InventoryLivingChest implements IInventory
 {
     // インベントリのItemstack
     public ItemStack[] containerItems = new ItemStack[27];
 
-    public EntityLivingChest_Base livingBaseChest;
+    public EntityLivingChest baseChest;
 
-    public InventoryLivingChest(EntityLivingChest_Base par1EntityLivingChest)
+    public InventoryLivingChest(EntityLivingChest basechest)
     {
-	this.livingBaseChest = par1EntityLivingChest;
+	this.baseChest = basechest;
     }
 
     // インベントリのSize
@@ -48,7 +47,8 @@ public class InventoryLivingChest implements IInventory
 		itemstack = this.containerItems[par1];
 		this.containerItems[par1] = null;
 		return itemstack;
-	    } else
+	    }
+	    else
 	    {
 		itemstack = this.containerItems[par1].splitStack(par2);
 
@@ -59,7 +59,8 @@ public class InventoryLivingChest implements IInventory
 
 		return itemstack;
 	    }
-	} else
+	}
+	else
 	{
 	    return null;
 	}
@@ -74,7 +75,8 @@ public class InventoryLivingChest implements IInventory
 	    ItemStack itemstack = this.containerItems[par1];
 	    this.containerItems[par1] = null;
 	    return itemstack;
-	} else
+	}
+	else
 	{
 	    return null;
 	}
@@ -96,7 +98,7 @@ public class InventoryLivingChest implements IInventory
     @Override
     public String getInventoryName()
     {
-	return this.livingBaseChest.getCommandSenderName();
+	return this.baseChest.getCommandSenderName();
     }
 
     // インベントリ名が変更可能かの判定
@@ -117,7 +119,7 @@ public class InventoryLivingChest implements IInventory
     @Override
     public void markDirty()
     {
-	// 内部インベントリの保存
+	// インベントリの保存
 	this.save();
     }
 
@@ -125,7 +127,7 @@ public class InventoryLivingChest implements IInventory
     @Override
     public boolean isUseableByPlayer(EntityPlayer par1EntityPlayer)
     {
-	return this.livingBaseChest.isDead ? false : par1EntityPlayer.getDistanceSqToEntity(this.livingBaseChest) <= 64.0D;
+	return this.baseChest.isDead ? false : par1EntityPlayer.getDistanceSqToEntity(this.baseChest) <= 64.0D;
     }
 
     // 開く際に呼ばれる
@@ -133,9 +135,9 @@ public class InventoryLivingChest implements IInventory
     public void openInventory()
     {
 	// 開く
-	this.livingBaseChest.setOpen(true);
+	this.baseChest.setOpen(true);
 
-	// 内部インベントリの読み込み
+	// インベントリの読み込み
 	this.load();
     }
 
@@ -144,9 +146,9 @@ public class InventoryLivingChest implements IInventory
     public void closeInventory()
     {
 	// 閉じる
-	this.livingBaseChest.setOpen(false);
+	this.baseChest.setOpen(false);
 
-	// 内部インベントリの保存
+	// インベントリの保存
 	this.save();
     }
 
@@ -175,7 +177,7 @@ public class InventoryLivingChest implements IInventory
 	}
 
 	// ItemStackのNBTに中身を保存
-	NBTTagCompound nbttagcompound = this.livingBaseChest.getEntityData();
+	NBTTagCompound nbttagcompound = this.baseChest.getEntityData();
 	if (nbttagcompound == null)
 	{
 	    nbttagcompound = new NBTTagCompound();
@@ -188,7 +190,7 @@ public class InventoryLivingChest implements IInventory
     public void load()
     {
 	// ItemStackのNBTを取得、空の中身を作成しておく
-	NBTTagCompound nbttagcompound = this.livingBaseChest.getEntityData();
+	NBTTagCompound nbttagcompound = this.baseChest.getEntityData();
 	this.containerItems = new ItemStack[this.getSizeInventory()];
 
 	// NBTが無ければ中身は空のままで
@@ -208,159 +210,6 @@ public class InventoryLivingChest implements IInventory
 		this.containerItems[j] = ItemStack.loadItemStackFromNBT(nbttagcompound1);
 	    }
 	}
-    }
-
-    // インベントリが一杯の場合の判定
-    public boolean isFullInventory(ItemStack par1ItemStack)
-    {
-	return (this.getFirstEmptyStack() == -1 && this.storeItemStack(par1ItemStack) == -1);
-    }
-
-    // 最初の空きスロットを取得（InventoryPlayer）
-    public int getFirstEmptyStack()
-    {
-	for (int i = 0; i < this.getSizeInventory(); ++i)
-	{
-	    if (this.containerItems[i] == null)
-	    {
-		return i;
-	    }
-	}
-
-	return -1;
-    }
-
-    // インベントリにアイテムを追加（InventoryPlayer）
-    public boolean addItemStackToInventory(ItemStack par1ItemStack)
-    {
-	this.load();
-	int slot;
-
-	if (par1ItemStack == null)
-	{
-	    this.save();
-	    return false;
-	} else if (par1ItemStack.stackSize == 0)
-	{
-	    this.save();
-	    return false;
-	} else
-	{
-	    if (par1ItemStack.isItemDamaged())
-	    {
-		slot = this.getFirstEmptyStack();
-
-		if (slot >= 0)
-		{
-		    this.containerItems[slot] = ItemStack.copyItemStack(par1ItemStack);
-		    par1ItemStack.stackSize = 0;
-
-		    this.save();
-		    return true;
-		} else
-		{
-		    this.save();
-		    return false;
-		}
-	    } else
-	    {
-		do
-		{
-		    slot = par1ItemStack.stackSize;
-		    par1ItemStack.stackSize = this.storePartialItemStack(par1ItemStack);
-		} while (par1ItemStack.stackSize > 0 && par1ItemStack.stackSize < slot);
-
-		this.save();
-		return par1ItemStack.stackSize < slot;
-	    }
-	}
-    }
-
-    // インベントリにアイテムを格納（1）（InventoryPlayer）
-    private int storePartialItemStack(ItemStack par1ItemStack)
-    {
-	Item item = par1ItemStack.getItem();
-	int size = par1ItemStack.stackSize;
-	int slot;
-
-	if (par1ItemStack.getMaxStackSize() == 1)
-	{
-	    slot = this.getFirstEmptyStack();
-
-	    if (slot < 0)
-	    {
-		return size;
-	    } else
-	    {
-		if (this.containerItems[slot] == null)
-		{
-		    this.containerItems[slot] = ItemStack.copyItemStack(par1ItemStack);
-		}
-
-		return 0;
-	    }
-	} else
-	{
-	    slot = this.storeItemStack(par1ItemStack);
-
-	    if (slot < 0)
-	    {
-		slot = this.getFirstEmptyStack();
-	    }
-
-	    if (slot < 0)
-	    {
-		return size;
-	    } else
-	    {
-		if (this.containerItems[slot] == null)
-		{
-		    this.containerItems[slot] = new ItemStack(item, 0, par1ItemStack.getItemDamage());
-
-		    if (par1ItemStack.hasTagCompound())
-		    {
-			this.containerItems[slot].setTagCompound((NBTTagCompound) par1ItemStack.getTagCompound().copy());
-		    }
-		}
-
-		int i = size;
-
-		if (size > this.containerItems[slot].getMaxStackSize() - this.containerItems[slot].stackSize)
-		{
-		    i = this.containerItems[slot].getMaxStackSize() - this.containerItems[slot].stackSize;
-		}
-
-		if (i > this.getInventoryStackLimit() - this.containerItems[slot].stackSize)
-		{
-		    i = this.getInventoryStackLimit() - this.containerItems[slot].stackSize;
-		}
-
-		if (i == 0)
-		{
-		    return size;
-		} else
-		{
-		    size -= i;
-		    this.containerItems[slot].stackSize += i;
-
-		    return size;
-		}
-	    }
-	}
-    }
-
-    // インベントリにアイテムを格納（2）（InventoryPlayer）
-    private int storeItemStack(ItemStack par1ItemStack)
-    {
-	for (int i = 0; i < this.getSizeInventory(); ++i)
-	{
-	    if (this.containerItems[i] != null && this.containerItems[i].getItem() == par1ItemStack.getItem() && this.containerItems[i].isStackable() && this.containerItems[i].stackSize < this.containerItems[i].getMaxStackSize() && this.containerItems[i].stackSize < this.getInventoryStackLimit() && (!this.containerItems[i].getHasSubtypes() || this.containerItems[i].getItemDamage() == par1ItemStack.getItemDamage()) && ItemStack.areItemStackTagsEqual(this.containerItems[i], par1ItemStack))
-	    {
-		return i;
-	    }
-	}
-
-	return -1;
     }
 
 }

@@ -9,27 +9,25 @@ import net.minecraft.util.StatCollector;
 import org.lwjgl.opengl.GL11;
 
 import com.schr0.schr0box.livingutility.LivingUtility;
-import com.schr0.schr0box.livingutility.entity.chest.EntityLivingChest_Follow;
-import com.schr0.schr0box.livingutility.entity.chest.inventory.container.ContainerInventoryLivingChest_Follow;
+import com.schr0.schr0box.livingutility.entity.chest.EntityLivingChest_Ender;
+import com.schr0.schr0box.livingutility.entity.chest.inventory.container.ContainerLivingChest_Ender;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
-
-@SideOnly(Side.CLIENT)
-public class GuiInventoryLivingChest_Follow extends GuiContainer
+/**
+ * Created by A.K. on 14/08/22.
+ */
+public class GuiLivingChest_Ender extends GuiContainer
 {
-    private EntityLivingChest_Follow theFollowChest;
+    private EntityLivingChest_Ender enderChest;
     private float showSizeX, showSizeY;
 
     // ResourceLocation
-    private static final ResourceLocation GUI_BACKGROUND = new ResourceLocation(LivingUtility.TEXTURE_DOMAIN + "textures/gui/livingchest_Follow.png");
+    private static final ResourceLocation GUI_BACKGROUND = new ResourceLocation(LivingUtility.TEXTURE_DOMAIN + "textures/gui/livingchest_Collect.png");
     private static final ResourceLocation GUI_ICONS = new ResourceLocation("textures/gui/icons.png");
 
-    public GuiInventoryLivingChest_Follow(InventoryPlayer inventoryPlayer, EntityLivingChest_Follow livingFollowChest)
+    public GuiLivingChest_Ender(InventoryPlayer inventoryplayer, EntityLivingChest_Ender enderchest)
     {
-	// スーパークラスのコンストラクタの引数はContainer
-	super(new ContainerInventoryLivingChest_Follow(inventoryPlayer, livingFollowChest));
-	this.theFollowChest = livingFollowChest;
+	super(new ContainerLivingChest_Ender(inventoryplayer, enderchest));
+	this.enderChest = enderchest;
 
 	// GUI背景のサイズ
 	this.xSize = 176;
@@ -41,7 +39,7 @@ public class GuiInventoryLivingChest_Follow extends GuiContainer
     protected void drawGuiContainerForegroundLayer(int xMouse, int yMouse)
     {
 	// LivingChestのインベントリ名
-	this.fontRendererObj.drawString(this.theFollowChest.getCommandSenderName(), 8, this.ySize - 216, 0x404040);
+	this.fontRendererObj.drawString(this.enderChest.getCommandSenderName(), 8, this.ySize - 216, 0x404040);
 
 	// プレイヤーのインベントリ名
 	this.fontRendererObj.drawString(StatCollector.translateToLocal("container.inventory"), 8, this.ySize - 96 + 2, 0x404040);
@@ -78,14 +76,14 @@ public class GuiInventoryLivingChest_Follow extends GuiContainer
 
 	// 画面上にmobを表示
 	// func_147046_a( 表示物のX中心, 表示物のY終点, 表示物のサイズ, 目線移動？のX, 目線移動？のY, 表示物)
-	GuiInventory.func_147046_a(x + 51, y + 67, 30, (float) (x + 51) - this.showSizeX, (float) (y + 25) - this.showSizeY, this.theFollowChest);
+	GuiInventory.func_147046_a(x + 51, y + 67, 30, (float) (x + 51) - this.showSizeX, (float) (y + 25) - this.showSizeY, this.enderChest);
 
 	// GUI_ICONSをbindTextureに渡す
 	this.mc.getTextureManager().bindTexture(GUI_ICONS);
 
 	// 体力の表示
-	int getHealth = this.theFollowChest.getHealthBar();
-	int getHealthBar = this.theFollowChest.getHealthBar() / 2;
+	int getHealth = this.enderChest.getHealthBar();
+	int getHealthBar = this.enderChest.getHealthBar() / 2;
 
 	if (10 < getHealth)
 	{
@@ -115,5 +113,4 @@ public class GuiInventoryLivingChest_Follow extends GuiContainer
 	    this.drawTexturedModalRect(x + 108 + (12 * getHealthBar), y + 22, iconPosX + 9, iconPosY, 7, 7);
 	}
     }
-
 }

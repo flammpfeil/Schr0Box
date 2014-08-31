@@ -1,6 +1,6 @@
 package com.schr0.schr0box.livingutility.entity.chest.model;
 
-import com.schr0.schr0box.livingutility.entity.chest.EntityLivingChest_Base;
+import com.schr0.schr0box.livingutility.entity.chest.EntityLivingChest;
 
 public class ModelMotionLivingChest
 {
@@ -19,10 +19,10 @@ public class ModelMotionLivingChest
     }
 
     // 蓋の開閉処理
-    public void setCoverMotion(EntityLivingChest_Base livingBaseChest, boolean isOpen)
+    public void setCoverMotion(EntityLivingChest thechest, boolean isOpen)
     {
 	// 蓋の角度・音声処理
-	this.coverMotion(livingBaseChest);
+	this.coverMotion(thechest);
 
 	// 開閉速度 (0.1F)
 	this.prev = this.lid;
@@ -31,7 +31,7 @@ public class ModelMotionLivingChest
 	if (isOpen && this.lid == 0.0F)
 	{
 	    // 開く
-	    livingBaseChest.setOpen(true);
+	    thechest.setOpen(true);
 	    this.lid++;
 	}
 
@@ -42,7 +42,8 @@ public class ModelMotionLivingChest
 	    if (isOpen)
 	    {
 		this.lid += f;
-	    } else
+	    }
+	    else
 	    {
 		this.lid -= f;
 	    }
@@ -57,7 +58,7 @@ public class ModelMotionLivingChest
 	    if (this.lid < f2 && f1 >= f2)
 	    {
 		// 閉じる
-		livingBaseChest.setOpen(false);
+		thechest.setOpen(false);
 	    }
 
 	    if (this.lid < 0.0F)
@@ -68,26 +69,27 @@ public class ModelMotionLivingChest
     }
 
     // 蓋の角度・音声処理
-    private void coverMotion(EntityLivingChest_Base par1EntityLivingChest)
+    private void coverMotion(EntityLivingChest thechest)
     {
 	// 開閉速度 (0.1F)
 	this.prevLidAngle = this.lidAngle;
 	float f = 0.2F;
 
-	if (par1EntityLivingChest.isOpen() && this.lidAngle == 0.0F)
+	if (thechest.isOpen() && this.lidAngle == 0.0F)
 	{
 	    // 音を出す
-	    par1EntityLivingChest.playSE("random.chestopen", 0.5F, par1EntityLivingChest.worldObj.rand.nextFloat() * 0.1F + 0.9F);
+	    thechest.playSE("random.chestopen", 0.5F, thechest.worldObj.rand.nextFloat() * 0.1F + 0.9F);
 	}
 
-	if (!par1EntityLivingChest.isOpen() && this.lidAngle > 0.0F || par1EntityLivingChest.isOpen() && this.lidAngle < 1.0F)
+	if (!thechest.isOpen() && this.lidAngle > 0.0F || thechest.isOpen() && this.lidAngle < 1.0F)
 	{
 	    float f1 = this.lidAngle;
 
-	    if (par1EntityLivingChest.isOpen())
+	    if (thechest.isOpen())
 	    {
 		this.lidAngle += f;
-	    } else
+	    }
+	    else
 	    {
 		this.lidAngle -= f;
 	    }
@@ -102,7 +104,7 @@ public class ModelMotionLivingChest
 	    if (this.lidAngle < f2 && f1 >= f2)
 	    {
 		// 音を出す
-		par1EntityLivingChest.playSE("random.chestclosed", 0.5F, par1EntityLivingChest.worldObj.rand.nextFloat() * 0.1F + 0.9F);
+		thechest.playSE("random.chestclosed", 0.5F, thechest.worldObj.rand.nextFloat() * 0.1F + 0.9F);
 	    }
 
 	    if (this.lidAngle < 0.0F)

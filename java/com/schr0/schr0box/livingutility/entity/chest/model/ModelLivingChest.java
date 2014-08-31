@@ -8,7 +8,7 @@ import net.minecraft.util.MathHelper;
 
 import org.lwjgl.opengl.GL11;
 
-import com.schr0.schr0box.livingutility.entity.chest.EntityLivingChest_Base;
+import com.schr0.schr0box.livingutility.entity.chest.EntityLivingChest;
 
 public class ModelLivingChest extends ModelBase
 {
@@ -125,7 +125,8 @@ public class ModelLivingChest extends ModelBase
 	    this.rightLeg.render(par7);
 	    this.leftLeg.render(par7);
 	    GL11.glPopMatrix();
-	} else
+	}
+	else
 	{
 	    this.mainBody.render(par7);
 	    this.rightArm.render(par7);
@@ -139,10 +140,10 @@ public class ModelLivingChest extends ModelBase
     @Override
     public void setRotationAngles(float par1, float par2, float par3, float par4, float par5, float par6, Entity par7Entity)
     {
-	EntityLivingChest_Base livingChest = (EntityLivingChest_Base) par7Entity;
+	EntityLivingChest basechest = (EntityLivingChest) par7Entity;
 
 	// お座りしている or 乗っている場合
-	if (livingChest.isSitting() || livingChest.isRiding())
+	if (basechest.isSitting() || basechest.isRiding())
 	{
 	    // RotationPointを変更
 	    this.mainBody.setRotationPoint(0F, 17F, 0F);
@@ -180,7 +181,7 @@ public class ModelLivingChest extends ModelBase
 	this.mainBody.rotateAngleY = this.rightArm.rotateAngleY = this.leftArm.rotateAngleY = this.rightLeg.rotateAngleY = this.leftLeg.rotateAngleY;
 
 	// 乗っていない場合
-	if (!livingChest.isRiding())
+	if (!basechest.isRiding())
 	{
 	    this.mainBody.rotateAngleX = par5 / (180F / (float) Math.PI);
 	}
@@ -197,10 +198,10 @@ public class ModelLivingChest extends ModelBase
     @Override
     public void setLivingAnimations(EntityLivingBase par1EntityLivingBase, float par2, float par3, float par4)
     {
-	EntityLivingChest_Base livingChest = (EntityLivingChest_Base) par1EntityLivingBase;
+	EntityLivingChest basechest = (EntityLivingChest) par1EntityLivingBase;
 
 	// 蓋を開く
-	float coverAngle = livingChest.modelMotion.getCoverAngle(par4);
+	float coverAngle = basechest.modelMotion.getCoverAngle(par4);
 	this.cover.rotateAngleX = -coverAngle;
     }
 }

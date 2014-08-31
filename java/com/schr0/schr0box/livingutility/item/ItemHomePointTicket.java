@@ -1,6 +1,7 @@
 package com.schr0.schr0box.livingutility.item;
 
-import com.schr0.schr0box.livingutility.LivingUtility;
+import java.util.List;
+
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.Item;
@@ -11,7 +12,7 @@ import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
 
-import java.util.List;
+import com.schr0.schr0box.livingutility.LivingUtility;
 
 public class ItemHomePointTicket extends Item
 {
@@ -34,15 +35,8 @@ public class ItemHomePointTicket extends Item
 	{
 	    return false;
 	}
-        //簡略化
-        return nbt.getTag("TargetName") != null;
-//	if (nbt.getTag("TargetName") != null)
-//	{
-//	    return true;
-//	} else
-//	{
-//	    return false;
-//	}
+
+	return nbt.getTag("TargetName") != null;
     }
 
     // アイテム情報の表示
@@ -62,7 +56,8 @@ public class ItemHomePointTicket extends Item
 	    par3List.add("Target PosZ : NULL");
 	    par3List.add("Target Side : NULL");
 	    par3List.add("+----------------+");
-	} else
+	}
+	else
 	{
 	    String name;
 	    int posx;
@@ -88,7 +83,8 @@ public class ItemHomePointTicket extends Item
 		par3List.add("Target PosZ : NULL");
 		par3List.add("Target Side : NULL");
 		par3List.add("+----------------+");
-	    } else
+	    }
+	    else
 	    {
 		par3List.add("Target Name : " + StatCollector.translateToLocal(name));
 		par3List.add(" ");

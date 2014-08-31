@@ -1,23 +1,23 @@
 package com.schr0.schr0box.livingutility.entity.chest.inventory;
 
-import com.schr0.schr0box.livingutility.entity.chest.EntityLivingChest_Base;
-
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 
+import com.schr0.schr0box.livingutility.entity.chest.EntityLivingChest;
+
 public class SpecialItemsLivingChest implements IInventory
 {
     // 特殊な効果を発揮するItemStackの収納用
     public ItemStack[] containerItems = new ItemStack[5];
 
-    public EntityLivingChest_Base livingBaseChest;
+    public EntityLivingChest baseChest;
 
-    public SpecialItemsLivingChest(EntityLivingChest_Base par1EntityLivingChest)
+    public SpecialItemsLivingChest(EntityLivingChest basechest)
     {
-	this.livingBaseChest = par1EntityLivingChest;
+	this.baseChest = basechest;
     }
 
     // インベントリのSize
@@ -47,7 +47,8 @@ public class SpecialItemsLivingChest implements IInventory
 		itemstack = this.containerItems[par1];
 		this.containerItems[par1] = null;
 		return itemstack;
-	    } else
+	    }
+	    else
 	    {
 		itemstack = this.containerItems[par1].splitStack(par2);
 
@@ -58,7 +59,8 @@ public class SpecialItemsLivingChest implements IInventory
 
 		return itemstack;
 	    }
-	} else
+	}
+	else
 	{
 	    return null;
 	}
@@ -73,7 +75,8 @@ public class SpecialItemsLivingChest implements IInventory
 	    ItemStack itemstack = this.containerItems[par1];
 	    this.containerItems[par1] = null;
 	    return itemstack;
-	} else
+	}
+	else
 	{
 	    return null;
 	}
@@ -95,7 +98,7 @@ public class SpecialItemsLivingChest implements IInventory
     @Override
     public String getInventoryName()
     {
-	return this.livingBaseChest.getCommandSenderName();
+	return this.baseChest.getCommandSenderName();
     }
 
     // インベントリ名が変更可能かの判定
@@ -116,7 +119,7 @@ public class SpecialItemsLivingChest implements IInventory
     @Override
     public void markDirty()
     {
-	// 内部インベントリの保存
+	// インベントリの保存
 	this.save();
     }
 
@@ -124,7 +127,7 @@ public class SpecialItemsLivingChest implements IInventory
     @Override
     public boolean isUseableByPlayer(EntityPlayer par1EntityPlayer)
     {
-	return this.livingBaseChest.isDead ? false : par1EntityPlayer.getDistanceSqToEntity(this.livingBaseChest) <= 64.0D;
+	return this.baseChest.isDead ? false : par1EntityPlayer.getDistanceSqToEntity(this.baseChest) <= 64.0D;
     }
 
     // 開く際に呼ばれる
@@ -132,9 +135,9 @@ public class SpecialItemsLivingChest implements IInventory
     public void openInventory()
     {
 	// 開く
-	this.livingBaseChest.setOpen(true);
+	this.baseChest.setOpen(true);
 
-	// 内部インベントリの読み込み
+	// インベントリの読み込み
 	this.load();
     }
 
@@ -143,9 +146,9 @@ public class SpecialItemsLivingChest implements IInventory
     public void closeInventory()
     {
 	// 閉じる
-	this.livingBaseChest.setOpen(false);
+	this.baseChest.setOpen(false);
 
-	// 内部インベントリの保存
+	// インベントリの保存
 	this.save();
     }
 
@@ -174,7 +177,7 @@ public class SpecialItemsLivingChest implements IInventory
 	}
 
 	// ItemStackのNBTに中身を保存
-	NBTTagCompound nbttagcompound = this.livingBaseChest.getEntityData();
+	NBTTagCompound nbttagcompound = this.baseChest.getEntityData();
 	if (nbttagcompound == null)
 	{
 	    nbttagcompound = new NBTTagCompound();
@@ -187,7 +190,7 @@ public class SpecialItemsLivingChest implements IInventory
     public void load()
     {
 	// ItemStackのNBTを取得、空の中身を作成しておく
-	NBTTagCompound nbttagcompound = this.livingBaseChest.getEntityData();
+	NBTTagCompound nbttagcompound = this.baseChest.getEntityData();
 	this.containerItems = new ItemStack[this.getSizeInventory()];
 
 	// NBTが無ければ中身は空のままで

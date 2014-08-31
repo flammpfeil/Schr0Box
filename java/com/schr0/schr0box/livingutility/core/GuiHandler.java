@@ -1,20 +1,21 @@
 package com.schr0.schr0box.livingutility.core;
 
-import com.schr0.schr0box.livingutility.LivingUtility;
-import com.schr0.schr0box.livingutility.entity.chest.*;
-import com.schr0.schr0box.livingutility.entity.chest.gui.GuiInventoryLivingChestEnder_Collect;
-import com.schr0.schr0box.livingutility.entity.chest.gui.GuiInventoryLivingChestEnder_Follow;
-import com.schr0.schr0box.livingutility.entity.chest.gui.GuiInventoryLivingChest_Collect;
-import com.schr0.schr0box.livingutility.entity.chest.gui.GuiInventoryLivingChest_Follow;
-import com.schr0.schr0box.livingutility.entity.chest.inventory.container.ContainerInventoryLivingChestEnder_Follow;
-import com.schr0.schr0box.livingutility.entity.chest.inventory.container.ContainerInventoryLivingChest_Collect;
-import com.schr0.schr0box.livingutility.entity.chest.inventory.container.ContainerInventoryLivingChest_Follow;
-import cpw.mods.fml.common.network.IGuiHandler;
+import java.util.List;
+
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.World;
 
-import java.util.List;
+import com.schr0.schr0box.livingutility.LivingUtility;
+import com.schr0.schr0box.livingutility.entity.chest.EntityLivingChest_Ender;
+import com.schr0.schr0box.livingutility.entity.chest.EntityLivingChest_Normal;
+import com.schr0.schr0box.livingutility.entity.chest.gui.GuiLivingChest_Ender;
+import com.schr0.schr0box.livingutility.entity.chest.gui.GuiLivingChest_Normal;
+import com.schr0.schr0box.livingutility.entity.chest.inventory.container.ContainerLivingChest_Ender;
+import com.schr0.schr0box.livingutility.entity.chest.inventory.container.ContainerLivingChest_Normal;
+
+import cpw.mods.fml.common.network.IGuiHandler;
 
 public class GuiHandler implements IGuiHandler
 {
@@ -23,34 +24,22 @@ public class GuiHandler implements IGuiHandler
     @Override
     public Object getServerGuiElement(int id, EntityPlayer player, World world, int x, int y, int z)
     {
+	List list = world.getEntitiesWithinAABB(Entity.class, AxisAlignedBB.getBoundingBox(x - 1, y - 1, z - 1, x + 1, y + 1, z + 1));
+
 	if (id == LivingUtility.CHEST_GUI_ID)
 	{
-	    List list = world.getEntitiesWithinAABB(EntityLivingChest_Base.class, AxisAlignedBB.getBoundingBox(x - 1, y - 1, z - 1, x + 1, y + 1, z + 1));
-
-	    if (!list.isEmpty())
+	    // Normal
+	    if (list.get(0) instanceof EntityLivingChest_Normal)
 	    {
-		if (list.get(0) instanceof EntityLivingChest_Follow)
-		{
-            if (list.get(0) instanceof EntityLivingChestEnder_Follow) {
-                return new ContainerInventoryLivingChestEnder_Follow(player.inventory, (EntityLivingChestEnder_Follow)list.get(0));
-            }
-		    return new ContainerInventoryLivingChest_Follow(player.inventory, (EntityLivingChest_Follow) list.get(0));
-		}
+		return new ContainerLivingChest_Normal(player.inventory, (EntityLivingChest_Normal) list.get(0));
+	    }
 
-		if (list.get(0) instanceof EntityLivingChest_Collect)
-		{
-		    return new ContainerInventoryLivingChest_Collect(player.inventory, (EntityLivingChest_Collect) list.get(0));
-		}
+	    // Ender
+	    if (list.get(0) instanceof EntityLivingChest_Ender)
+	    {
+		return new ContainerLivingChest_Ender(player.inventory, (EntityLivingChest_Ender) list.get(0));
 	    }
 	}
-        //EnderChest
-        if (id == LivingUtility.ENDER_CHEST_GUI_ID) {
-            List list = world.getEntitiesWithinAABB(EntityLivingChest_Base.class, AxisAlignedBB.getBoundingBox(x - 1, y - 1, z - 1, x + 1, y + 1, z + 1));
-
-            if (!list.isEmpty() && list.get(0) instanceof EntityLivingChestEnder_Follow) {
-                return new ContainerInventoryLivingChestEnder_Follow(player.inventory, (EntityLivingChestEnder_Follow)list.get(0));
-            }
-        }
 
 	return null;
     }
@@ -60,27 +49,20 @@ public class GuiHandler implements IGuiHandler
     @Override
     public Object getClientGuiElement(int id, EntityPlayer player, World world, int x, int y, int z)
     {
+	List list = world.getEntitiesWithinAABB(Entity.class, AxisAlignedBB.getBoundingBox(x - 1, y - 1, z - 1, x + 1, y + 1, z + 1));
+
 	if (id == LivingUtility.CHEST_GUI_ID)
 	{
-	    List list = world.getEntitiesWithinAABB(EntityLivingChest_Base.class, AxisAlignedBB.getBoundingBox(x - 1, y - 1, z - 1, x + 1, y + 1, z + 1));
-
-	    if (!list.isEmpty())
+	    // Normal
+	    if (list.get(0) instanceof EntityLivingChest_Normal)
 	    {
-		if (list.get(0) instanceof EntityLivingChest_Follow)
-		{
-            if (list.get(0) instanceof EntityLivingChestEnder_Follow) {
-                return new GuiInventoryLivingChestEnder_Follow(player.inventory, (EntityLivingChestEnder_Follow)list.get(0));
-            }
-		    return new GuiInventoryLivingChest_Follow(player.inventory, (EntityLivingChest_Follow) list.get(0));
-		}
+		return new GuiLivingChest_Normal(player.inventory, (EntityLivingChest_Normal) list.get(0));
+	    }
 
-		if (list.get(0) instanceof EntityLivingChest_Collect)
-		{
-            if (list.get(0) instanceof EntityLivingChestEnder_Collect) {
-                return new GuiInventoryLivingChestEnder_Collect(player.inventory, (EntityLivingChestEnder_Collect)list.get(0));
-            }
-		    return new GuiInventoryLivingChest_Collect(player.inventory, (EntityLivingChest_Collect) list.get(0));
-		}
+	    // Ender
+	    if (list.get(0) instanceof EntityLivingChest_Ender)
+	    {
+		return new GuiLivingChest_Ender(player.inventory, (EntityLivingChest_Ender) list.get(0));
 	    }
 	}
 

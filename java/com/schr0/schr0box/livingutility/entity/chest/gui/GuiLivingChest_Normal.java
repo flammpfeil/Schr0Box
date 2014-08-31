@@ -9,26 +9,26 @@ import net.minecraft.util.StatCollector;
 import org.lwjgl.opengl.GL11;
 
 import com.schr0.schr0box.livingutility.LivingUtility;
-import com.schr0.schr0box.livingutility.entity.chest.EntityLivingChest_Collect;
-import com.schr0.schr0box.livingutility.entity.chest.inventory.container.ContainerInventoryLivingChest_Collect;
+import com.schr0.schr0box.livingutility.entity.chest.EntityLivingChest_Normal;
+import com.schr0.schr0box.livingutility.entity.chest.inventory.container.ContainerLivingChest_Normal;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
-public class GuiInventoryLivingChest_Collect extends GuiContainer
+public class GuiLivingChest_Normal extends GuiContainer
 {
-    private EntityLivingChest_Collect theCollectChest;
+    private EntityLivingChest_Normal normalChest;
     private float showSizeX, showSizeY;
 
     // ResourceLocation
     private static final ResourceLocation GUI_BACKGROUND = new ResourceLocation(LivingUtility.TEXTURE_DOMAIN + "textures/gui/livingchest_Collect.png");
     private static final ResourceLocation GUI_ICONS = new ResourceLocation("textures/gui/icons.png");
 
-    public GuiInventoryLivingChest_Collect(InventoryPlayer inventoryPlayer, EntityLivingChest_Collect livingCollectChest)
+    public GuiLivingChest_Normal(InventoryPlayer inventoryplayer, EntityLivingChest_Normal normalchest)
     {
-	super(new ContainerInventoryLivingChest_Collect(inventoryPlayer, livingCollectChest));
-	this.theCollectChest = livingCollectChest;
+	super(new ContainerLivingChest_Normal(inventoryplayer, normalchest));
+	this.normalChest = normalchest;
 
 	// GUI背景のサイズ
 	this.xSize = 176;
@@ -40,7 +40,7 @@ public class GuiInventoryLivingChest_Collect extends GuiContainer
     protected void drawGuiContainerForegroundLayer(int xMouse, int yMouse)
     {
 	// LivingChestのインベントリ名
-	this.fontRendererObj.drawString(this.theCollectChest.getCommandSenderName(), 8, this.ySize - 216, 0x404040);
+	this.fontRendererObj.drawString(this.normalChest.getCommandSenderName(), 8, this.ySize - 216, 0x404040);
 
 	// プレイヤーのインベントリ名
 	this.fontRendererObj.drawString(StatCollector.translateToLocal("container.inventory"), 8, this.ySize - 96 + 2, 0x404040);
@@ -77,14 +77,14 @@ public class GuiInventoryLivingChest_Collect extends GuiContainer
 
 	// 画面上にmobを表示
 	// func_147046_a( 表示物のX中心, 表示物のY終点, 表示物のサイズ, 目線移動？のX, 目線移動？のY, 表示物)
-	GuiInventory.func_147046_a(x + 51, y + 67, 30, (float) (x + 51) - this.showSizeX, (float) (y + 25) - this.showSizeY, this.theCollectChest);
+	GuiInventory.func_147046_a(x + 51, y + 67, 30, (float) (x + 51) - this.showSizeX, (float) (y + 25) - this.showSizeY, this.normalChest);
 
 	// GUI_ICONSをbindTextureに渡す
 	this.mc.getTextureManager().bindTexture(GUI_ICONS);
 
 	// 体力の表示
-	int getHealth = this.theCollectChest.getHealthBar();
-	int getHealthBar = this.theCollectChest.getHealthBar() / 2;
+	int getHealth = this.normalChest.getHealthBar();
+	int getHealthBar = this.normalChest.getHealthBar() / 2;
 
 	if (10 < getHealth)
 	{

@@ -12,6 +12,7 @@ import net.minecraft.client.renderer.tileentity.TileEntitySkullRenderer;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.passive.EntitySheep;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
@@ -26,14 +27,12 @@ import net.minecraftforge.client.MinecraftForgeClient;
 import org.lwjgl.opengl.GL11;
 
 import com.mojang.authlib.GameProfile;
-import com.schr0.schr0box.livingutility.entity.chest.EntityLivingChest_Base;
+import com.schr0.schr0box.livingutility.entity.chest.EntityLivingChest;
 import com.schr0.schr0box.livingutility.entity.chest.model.ModelLivingChest;
 
 public abstract class RenderLivingChest_Base extends RenderLiving
 {
     protected ModelLivingChest modelLivingChestMain;
-
-    private static final ResourceLocation CHEST_TEXTURE = new ResourceLocation("textures/entity/chest/normal.png");
 
     public RenderLivingChest_Base()
     {
@@ -46,44 +45,50 @@ public abstract class RenderLivingChest_Base extends RenderLiving
     @Override
     protected ResourceLocation getEntityTexture(Entity par1Entity)
     {
-	return this.getResourceLocation();
+	// 胴体部分
+	return this.getBodyResourceLocation();
     }
 
     // doRender（Entity）
     @Override
     public void doRender(Entity par1Entity, double par2, double par4, double par6, float par8, float par9)
     {
-	super.doRender((EntityLivingChest_Base) par1Entity, par2, par4, par6, par8, par9);
+	super.doRender((EntityLivingChest) par1Entity, par2, par4, par6, par8, par9);
     }
 
     // doRender（EntityLivingBase）
     @Override
     public void doRender(EntityLivingBase par1Entity, double par2, double par4, double par6, float par8, float par9)
     {
-	this.doRender((EntityLivingChest_Base) par1Entity, par2, par4, par6, par8, par9);
+	this.doRender((EntityLivingChest) par1Entity, par2, par4, par6, par8, par9);
     }
 
-    // doRender（独自）
-    private void doRender(EntityLivingChest_Base par1Entity, double par2, double par4, double par6, float par8, float par9)
+    // doRender（EntityLivingChest_Base）
+    private void doRender(EntityLivingChest basechest, double par2, double par4, double par6, float par8, float par9)
     {
-	super.doRender(par1Entity, par2, par4, par6, par8, par9);
+	super.doRender(basechest, par2, par4, par6, par8, par9);
     }
 
     // レンダーパス（EntityLivingBase）
     @Override
     protected int shouldRenderPass(EntityLivingBase par1Entity, int par2, float par3)
     {
-	return this.shouldRenderPass((EntityLivingChest_Base) par1Entity, par2, par3);
+	return this.shouldRenderPass((EntityLivingChest) par1Entity, par2, par3);
     }
 
     // レンダーパス（EntityLivingChest_Base）
-    private int shouldRenderPass(EntityLivingChest_Base par1Entity, int par2, float par3)
+    private int shouldRenderPass(EntityLivingChest basechest, int par2, float par3)
     {
 	if (par2 == 0)
 	{
-	    this.bindTexture(CHEST_TEXTURE);
+	    this.bindTexture(this.getColorResourceLocation());
+
+	    int j = basechest.getColor();
+	    GL11.glColor3f(EntitySheep.fleeceColorTable[j][0], EntitySheep.fleeceColorTable[j][1], EntitySheep.fleeceColorTable[j][2]);
+
 	    return 1;
-	} else
+	}
+	else
 	{
 	    return -1;
 	}
@@ -93,13 +98,16 @@ public abstract class RenderLivingChest_Base extends RenderLiving
     @Override
     protected void renderEquippedItems(EntityLivingBase par1Entity, float par2)
     {
-	this.renderEquippedItems((EntityLivingChest_Base) par1Entity, par2);
+	this.renderEquippedItems((EntityLivingChest) par1Entity, par2);
     }
 
     // ------------------------- ↓独自の実装↓ -------------------------//
 
-    // ResourceLocationのget
-    public abstract ResourceLocation getResourceLocation();
+    // 胴体ResourceLocationのget
+    public abstract ResourceLocation getBodyResourceLocation();
+
+    // 染色ResourceLocationのget
+    public abstract ResourceLocation getColorResourceLocation();
 
     // 独自の手に持ったアイテムの描画（ModelBiped）
     private void renderEquippedItems(EntityLiving par1Entity, float par2)
@@ -131,7 +139,8 @@ public abstract class RenderLivingChest_Base extends RenderLiving
 		}
 
 		this.renderManager.itemRenderer.renderItem(par1Entity, itemstack1, 0);
-	    } else if (item == Items.skull)
+	    }
+	    else if (item == Items.skull)
 	    {
 		f1 = 1.0625F;
 		GL11.glScalef(f1, -f1, -f1);
@@ -144,7 +153,8 @@ public abstract class RenderLivingChest_Base extends RenderLiving
 		    if (nbttagcompound.hasKey("SkullOwner", 10))
 		    {
 			gameprofile = NBTUtil.func_152459_a(nbttagcompound.getCompoundTag("SkullOwner"));
-		    } else if (nbttagcompound.hasKey("SkullOwner", 8) && !StringUtils.isNullOrEmpty(nbttagcompound.getString("SkullOwner")))
+		    }
+		    else if (nbttagcompound.hasKey("SkullOwner", 8) && !StringUtils.isNullOrEmpty(nbttagcompound.getString("SkullOwner")))
 		    {
 			gameprofile = new GameProfile((UUID) null, nbttagcompound.getString("SkullOwner"));
 		    }
@@ -183,7 +193,8 @@ public abstract class RenderLivingChest_Base extends RenderLiving
 		GL11.glRotatef(20.0F, 1.0F, 0.0F, 0.0F);
 		GL11.glRotatef(45.0F, 0.0F, 1.0F, 0.0F);
 		GL11.glScalef(-f1, -f1, f1);
-	    } else if (item == Items.bow)
+	    }
+	    else if (item == Items.bow)
 	    {
 		f1 = 0.625F;
 		GL11.glTranslatef(0.0F, 0.125F, 0.3125F);
@@ -191,7 +202,8 @@ public abstract class RenderLivingChest_Base extends RenderLiving
 		GL11.glScalef(f1, -f1, f1);
 		GL11.glRotatef(-100.0F, 1.0F, 0.0F, 0.0F);
 		GL11.glRotatef(45.0F, 0.0F, 1.0F, 0.0F);
-	    } else if (item.isFull3D())
+	    }
+	    else if (item.isFull3D())
 	    {
 		f1 = 0.625F;
 
@@ -205,7 +217,8 @@ public abstract class RenderLivingChest_Base extends RenderLiving
 		GL11.glScalef(f1, -f1, f1);
 		GL11.glRotatef(-100.0F, 1.0F, 0.0F, 0.0F);
 		GL11.glRotatef(45.0F, 0.0F, 1.0F, 0.0F);
-	    } else
+	    }
+	    else
 	    {
 		f1 = 0.375F;
 		GL11.glTranslatef(0.25F, 0.1875F, -0.1875F);
@@ -230,7 +243,8 @@ public abstract class RenderLivingChest_Base extends RenderLiving
 		    GL11.glColor4f(f2, f3, f4, 1.0F);
 		    this.renderManager.itemRenderer.renderItem(par1Entity, itemstack, i);
 		}
-	    } else
+	    }
+	    else
 	    {
 		i = itemstack.getItem().getColorFromItemStack(itemstack, 0);
 		float f5 = (i >> 16 & 255) / 255.0F;

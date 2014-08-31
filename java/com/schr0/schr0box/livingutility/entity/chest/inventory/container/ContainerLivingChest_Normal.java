@@ -7,38 +7,38 @@ import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 
 import com.schr0.schr0box.livingutility.LivingUtility;
-import com.schr0.schr0box.livingutility.entity.chest.EntityLivingChest_Collect;
+import com.schr0.schr0box.livingutility.entity.chest.EntityLivingChest;
 import com.schr0.schr0box.livingutility.entity.chest.inventory.EquipmentLivingChest;
 import com.schr0.schr0box.livingutility.entity.chest.inventory.InventoryLivingChest;
 import com.schr0.schr0box.livingutility.entity.chest.inventory.SpecialItemsLivingChest;
 
-public class ContainerInventoryLivingChest_Collect extends Container
+public class ContainerLivingChest_Normal extends Container
 {
-    private EntityLivingChest_Collect theCollectChest;
-    private InventoryLivingChest theCollectChestInventory;
-    private EquipmentLivingChest theCollectChestEquipment;
-    private SpecialItemsLivingChest theCollectChestSpecialItems;
+    private EntityLivingChest baseChest;
+    private InventoryLivingChest baseChestInventory;
+    private EquipmentLivingChest baseChestEquipment;
+    private SpecialItemsLivingChest baseChestSpecialItems;
 
-    public ContainerInventoryLivingChest_Collect(InventoryPlayer inventoryPlayer, EntityLivingChest_Collect livingCollectChest)
+    public ContainerLivingChest_Normal(InventoryPlayer inventoryPlayer, EntityLivingChest basechest)
     {
-	int numRows = livingCollectChest.inventory.getSizeInventory() / 9;
+	this.baseChest = basechest;
+	int numRows = basechest.inventory.getSizeInventory() / 9;
 	int slotX = 8;
 	int slotY = 0;
 
-	this.theCollectChest = livingCollectChest;
-	this.theCollectChestInventory = livingCollectChest.inventory;
-	this.theCollectChestEquipment = livingCollectChest.equipment;
-	this.theCollectChestSpecialItems = livingCollectChest.specialItems;
+	this.baseChestInventory = basechest.inventory;
+	this.baseChestEquipment = basechest.equipment;
+	this.baseChestSpecialItems = basechest.specialItems;
 
-	livingCollectChest.inventory.load();
-	livingCollectChest.equipment.load();
-	livingCollectChest.specialItems.load();
+	this.baseChestInventory.load();
+	this.baseChestEquipment.load();
+	this.baseChestSpecialItems.load();
 
 	// スロットを設置
 	// addSlotToContainer( Slot(IInventory, slotIndex,xDisplayPosition, yDisplayPosition) )
 
 	// 手持ちのアイテム
-	this.addSlotToContainer(new Slot(livingCollectChest.equipment, 0, 109, 46)
+	this.addSlotToContainer(new Slot(this.baseChestEquipment, 0, 109, 46)
 	{
 	    @Override
 	    public int getSlotStackLimit()
@@ -47,7 +47,7 @@ public class ContainerInventoryLivingChest_Collect extends Container
 	    }
 	});
 	// 頭装備
-	this.addSlotToContainer(new Slot(theCollectChest.equipment, 1, 8, 17)
+	this.addSlotToContainer(new Slot(this.baseChestEquipment, 1, 8, 17)
 	{
 	    @Override
 	    public int getSlotStackLimit()
@@ -66,7 +66,7 @@ public class ContainerInventoryLivingChest_Collect extends Container
 	});
 
 	// 手装備
-	this.addSlotToContainer(new Slot(theCollectChest.equipment, 2, 8, 53)
+	this.addSlotToContainer(new Slot(this.baseChestEquipment, 2, 8, 53)
 	{
 	    @Override
 	    public int getSlotStackLimit()
@@ -85,7 +85,7 @@ public class ContainerInventoryLivingChest_Collect extends Container
 	});
 
 	// 足装備
-	this.addSlotToContainer(new Slot(theCollectChest.equipment, 3, 81, 17)
+	this.addSlotToContainer(new Slot(this.baseChestEquipment, 3, 81, 17)
 	{
 	    @Override
 	    public int getSlotStackLimit()
@@ -104,7 +104,7 @@ public class ContainerInventoryLivingChest_Collect extends Container
 	});
 
 	// 靴装備
-	this.addSlotToContainer(new Slot(theCollectChest.equipment, 4, 81, 53)
+	this.addSlotToContainer(new Slot(this.baseChestEquipment, 4, 81, 53)
 	{
 	    @Override
 	    public int getSlotStackLimit()
@@ -123,7 +123,7 @@ public class ContainerInventoryLivingChest_Collect extends Container
 	});
 
 	// 座標地点登録用
-	this.addSlotToContainer(new Slot(livingCollectChest.specialItems, 0, 145, 47)
+	this.addSlotToContainer(new Slot(this.baseChestSpecialItems, 0, 145, 47)
 	{
 	    @Override
 	    public boolean isItemValid(ItemStack p_75214_1_)
@@ -144,7 +144,7 @@ public class ContainerInventoryLivingChest_Collect extends Container
 	    for (int slotRow = 0; slotRow < 9; ++slotRow)
 	    {
 		slotY = 75;
-		this.addSlotToContainer(new Slot(livingCollectChest.inventory, (slotRow + slotCol * 9), (slotX + slotRow * 18), (slotY + slotCol * 18)));
+		this.addSlotToContainer(new Slot(this.baseChestInventory, (slotRow + slotCol * 9), (slotX + slotRow * 18), (slotY + slotCol * 18)));
 	    }
 	}
 
@@ -172,7 +172,7 @@ public class ContainerInventoryLivingChest_Collect extends Container
     @Override
     public boolean canInteractWith(EntityPlayer entityplayer)
     {
-	return this.theCollectChestInventory.isUseableByPlayer(entityplayer) && this.theCollectChest.isEntityAlive() && this.theCollectChest.getDistanceToEntity(entityplayer) < 8.0F;
+	return this.baseChestInventory.isUseableByPlayer(entityplayer) && this.baseChest.isEntityAlive() && this.baseChest.getDistanceToEntity(entityplayer) < 8.0F;
     }
 
     // Shift+左クリックしたときの処理
@@ -192,7 +192,7 @@ public class ContainerInventoryLivingChest_Collect extends Container
 	    srcItemStack = destItemStack.copy();
 
 	    int minSlotSize = 6;
-	    int maxSlotSize = this.theCollectChestInventory.getSizeInventory() + minSlotSize;
+	    int maxSlotSize = this.baseChestInventory.getSizeInventory() + minSlotSize;
 
 	    // 上インベントリ内なら, 下のインベントリに移動.
 	    if (slotIndex < maxSlotSize && !this.mergeItemStack(destItemStack, maxSlotSize, this.inventorySlots.size(), false))
@@ -210,7 +210,8 @@ public class ContainerInventoryLivingChest_Collect extends Container
 	    if (destItemStack.stackSize == 0)
 	    {
 		slot.putStack((ItemStack) null);
-	    } else
+	    }
+	    else
 	    {
 		// スロット更新通知
 		slot.onSlotChanged();
@@ -220,12 +221,18 @@ public class ContainerInventoryLivingChest_Collect extends Container
 	return srcItemStack;
     }
 
+    // 閉じる際に呼ばれる処理
     @Override
     public void onContainerClosed(EntityPlayer p_75134_1_)
     {
 	super.onContainerClosed(p_75134_1_);
-	this.theCollectChestInventory.save();
-	this.theCollectChestEquipment.save();
-	this.theCollectChestSpecialItems.save();
+
+	// Traderの初期化
+	this.baseChest.setTrader((EntityPlayer) null);
+
+	// 各種インベントリのsave
+	this.baseChestInventory.save();
+	this.baseChestEquipment.save();
+	this.baseChestSpecialItems.save();
     }
 }

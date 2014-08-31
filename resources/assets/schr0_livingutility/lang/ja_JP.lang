@@ -1,8 +1,6 @@
 //-----------エンティティ-----------//
-entity.schr0box.livingutility.LivingChest_Follow.name=Living Follow Chest
-entity.schr0box.livingutility.LivingChest_Collect.name=Living Collect Chest
-entity.schr0box.livingutility.LivingChest_Follow.name=Living Follow Ender Chest
-entity.schr0box.livingutility.LivingChest_Collect.name=Living Collect Ender Chest
+entity.schr0box.livingutility.NormalChest.name=Living Normal Chest
+entity.schr0box.livingutility.EnderChest.name=Living Ender Chest
 
 //-----------アイテム-----------//
 item.itemHomePointTicket.name=ホーム ポイント チケット

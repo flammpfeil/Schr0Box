@@ -1,5 +1,18 @@
 package com.schr0.schr0box.livingutility.entity.chest;
 
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockColored;
+import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.IEntityLivingData;
+import net.minecraft.entity.item.EntityItem;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Items;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.pathfinding.PathEntity;
+import net.minecraft.util.MathHelper;
+import net.minecraft.world.World;
+
 import com.schr0.schr0box.livingutility.LivingUtility;
 import com.schr0.schr0box.livingutility.entity.base.EntityLivingUtility;
 import com.schr0.schr0box.livingutility.entity.chest.inventory.EquipmentLivingChest;
@@ -7,21 +20,14 @@ import com.schr0.schr0box.livingutility.entity.chest.inventory.InventoryLivingCh
 import com.schr0.schr0box.livingutility.entity.chest.inventory.SpecialItemsLivingChest;
 import com.schr0.schr0box.livingutility.entity.chest.model.ModelMotionLivingChest;
 
-import net.minecraft.block.Block;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.IEntityLivingData;
-import net.minecraft.entity.item.EntityItem;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.pathfinding.PathEntity;
-import net.minecraft.util.MathHelper;
-import net.minecraft.world.World;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public abstract class EntityLivingChest_Base extends EntityLivingUtility
+public abstract class EntityLivingChest extends EntityLivingUtility
 {
+    // ModelMotionLivingChestの宣言
+    public ModelMotionLivingChest modelMotion = new ModelMotionLivingChest();
+
     // InventoryLivingChestの宣言
     public InventoryLivingChest inventory = new InventoryLivingChest(this);
 
@@ -31,41 +37,58 @@ public abstract class EntityLivingChest_Base extends EntityLivingUtility
     // SpecialItemsLivingChestの宣言
     public SpecialItemsLivingChest specialItems = new SpecialItemsLivingChest(this);
 
-    // ModelMotionLivingChestの宣言
-    public ModelMotionLivingChest modelMotion = new ModelMotionLivingChest();
+    // DataWatcherのID
+    // OPEN_VALUE(25) : 蓋開閉
+    // COLOR_VALUE(26) : 染色
+    private final static int OPEN_VALUE = 25;
+    private final static int COLOR_VALUE = 26;
 
-    public EntityLivingChest_Base(World par1World)
+    public EntityLivingChest(World par1World)
     {
 	super(par1World);
     }
 
-    // dataWatcherの処理
-    // 20 : 開閉状態
+    // DataWatcherの処理
     @Override
     protected void entityInit()
     {
 	super.entityInit();
-	this.getDataWatcher().addObject(20, Byte.valueOf((byte) 0));
+	this.getDataWatcher().addObject(OPEN_VALUE, Byte.valueOf((byte) 0));
+	this.getDataWatcher().addObject(COLOR_VALUE, new Byte((byte) 0));
     }
 
-    // 開閉の判定 20
+    // OPEN_VALUE : 蓋開閉の判定
     public boolean isOpen()
     {
-	return (this.dataWatcher.getWatchableObjectByte(20) & 4) != 0;
+	return (this.getDataWatcher().getWatchableObjectByte(OPEN_VALUE) & 4) != 0;
     }
 
-    // 開閉の処理 20
+    // OPEN_VALUE : 蓋開閉のset
     public void setOpen(boolean par1)
     {
-	byte b0 = this.dataWatcher.getWatchableObjectByte(20);
+	byte b0 = this.getDataWatcher().getWatchableObjectByte(OPEN_VALUE);
 
 	if (par1)
 	{
-	    this.dataWatcher.updateObject(20, Byte.valueOf((byte) (b0 | 4)));
-	} else
-	{
-	    this.dataWatcher.updateObject(20, Byte.valueOf((byte) (b0 & -5)));
+	    this.getDataWatcher().updateObject(OPEN_VALUE, Byte.valueOf((byte) (b0 | 4)));
 	}
+	else
+	{
+	    this.getDataWatcher().updateObject(OPEN_VALUE, Byte.valueOf((byte) (b0 & -5)));
+	}
+    }
+
+    // COLOR_VALUE : 染色
+    public int getColor()
+    {
+	return this.getDataWatcher().getWatchableObjectByte(COLOR_VALUE) & 15;
+    }
+
+    // COLOR_VALUE : 染色のset
+    public void setColor(int dye)
+    {
+	byte b0 = this.dataWatcher.getWatchableObjectByte(COLOR_VALUE);
+	this.getDataWatcher().updateObject(COLOR_VALUE, Byte.valueOf((byte) (b0 & 240 | dye & 15)));
     }
 
     // NBTの書き込み
@@ -74,8 +97,11 @@ public abstract class EntityLivingChest_Base extends EntityLivingUtility
     {
 	super.writeEntityToNBT(par1NBTTagCompound);
 
-	// 開閉状態
+	// 蓋開閉の判定
 	par1NBTTagCompound.setBoolean("Open", this.isOpen());
+
+	// 染色
+	par1NBTTagCompound.setByte("Color", (byte) this.getColor());
 
 	// インベントリの保存
 	this.inventory.save();
@@ -89,29 +115,16 @@ public abstract class EntityLivingChest_Base extends EntityLivingUtility
     {
 	super.readEntityFromNBT(par1NBTTagCompound);
 
-	// 開閉状態
+	// 蓋開閉のset
 	this.setOpen(par1NBTTagCompound.getBoolean("Open"));
+
+	// 染色のset
+	this.setColor(par1NBTTagCompound.getByte("Color"));
 
 	// インベントリの読み込み
 	this.inventory.load();
 	this.equipment.load();
 	this.specialItems.load();
-    }
-
-    // （自らが）乗っている場合のアップデート
-    @Override
-    public void updateRidden()
-    {
-	super.updateRidden();
-
-	// 何かに乗っている場合
-	if (this.isRiding())
-	{
-	    EntityLivingBase livingbase = (EntityLivingBase) this.ridingEntity;
-
-	    // 乗っている生物と同様の正面を向く
-	    this.prevRotationYaw = this.rotationYaw = livingbase.rotationYaw;
-	}
     }
 
     // （自らが）乗っている場合のY座標
@@ -123,7 +136,8 @@ public abstract class EntityLivingChest_Base extends EntityLivingUtility
 	    if (this.ridingEntity instanceof EntityPlayer)
 	    {
 		return this.yOffset - 1.2F;
-	    } else
+	    }
+	    else
 	    {
 		return this.yOffset + 0.15F;
 	    }
@@ -162,27 +176,59 @@ public abstract class EntityLivingChest_Base extends EntityLivingUtility
 	// 飼い慣らし状態 ＆ 飼い主である場合
 	if (this.isTamed() && this.func_152114_e(par1EntityPlayer))
 	{
+	    // 染料である場合
+	    if (currentItem != null && currentItem.getItem() == Items.dye)
+	    {
+		int color = BlockColored.func_150032_b(currentItem.getItemDamage());
+
+		if (this.getColor() != color)
+		{
+		    // 染色のset
+		    this.setColor(color);
+
+		    --currentItem.stackSize;
+
+		    // 音を出す
+		    this.playSE("random.pop", 1.0F, 1.0F);
+		}
+
+		// Itemを振る動作
+		par1EntityPlayer.swingItem();
+		return true;
+	    }
+
 	    // スニーキング状態の場合
 	    if (par1EntityPlayer.isSneaking())
 	    {
 		// お座りの処理
-		this.setSittingEx();
-	    } else
-	    {
-		// Customerのset（独自）
-		this.setCustomer(par1EntityPlayer);
-
-		// 独自GUIを表示
 		if (!this.worldObj.isRemote)
 		{
+		    this.setSitting(!this.isSitting());
+		}
+
+		// Itemを振る動作
+		par1EntityPlayer.swingItem();
+		return true;
+	    }
+	    // スニーキング状態でない場合
+	    else
+	    {
+		// クライアントだけの処理
+		if (!this.worldObj.isRemote)
+		{
+		    // Traderのset（独自）
+		    this.setTrader(par1EntityPlayer);
+
+		    // 独自GUIを表示
 		    par1EntityPlayer.openGui(LivingUtility.instance, LivingUtility.CHEST_GUI_ID, this.worldObj, (int) this.posX, (int) this.posY, (int) this.posZ);
 		}
-	    }
 
-	    // Itemを振る動作
-	    par1EntityPlayer.swingItem();
-	    return true;
+		// Itemを振る動作
+		par1EntityPlayer.swingItem();
+		return true;
+	    }
 	}
+
 	return super.interact(par1EntityPlayer);
     }
 
@@ -333,26 +379,26 @@ public abstract class EntityLivingChest_Base extends EntityLivingUtility
     }
 
     // UtilityCoreによりスポーンした際の処理
-    public void onSpawnWithUtilityCore(EntityLivingChest_Base theChest, EntityPlayer player, World world, int pX, int pY, int pZ)
+    public void onSpawnWithUtilityCore(EntityLivingChest basechest, EntityPlayer player, World world, int px, int py, int pz)
     {
 	// 向きの修正
-	theChest.setLocationAndAngles(pX + 0.5D, pY, pZ + 0.5D, MathHelper.wrapAngleTo180_float(world.rand.nextFloat() * 360.0F), 0.0F);
-	theChest.rotationYawHead = theChest.rotationYaw;
-	theChest.renderYawOffset = theChest.rotationYaw;
+	basechest.setLocationAndAngles(px + 0.5D, py, pz + 0.5D, MathHelper.wrapAngleTo180_float(world.rand.nextFloat() * 360.0F), 0.0F);
+	basechest.rotationYawHead = basechest.rotationYaw;
+	basechest.renderYawOffset = basechest.rotationYaw;
 
 	// mobEggから沸いた際に呼ばれる
-	theChest.onSpawnWithEgg((IEntityLivingData) null);
+	basechest.onSpawnWithEgg((IEntityLivingData) null);
 
 	// 飼い慣らし
-	theChest.setTamed(true);
-	theChest.setPathToEntity((PathEntity) null);
-	theChest.setAttackTarget((EntityLivingBase) null);
-	theChest.setHealth(20.0F);
-	theChest.func_152115_b(player.getUniqueID().toString());
-	theChest.worldObj.setEntityState(this, (byte) 7);
+	basechest.setTamed(true);
+	basechest.setPathToEntity((PathEntity) null);
+	basechest.setAttackTarget((EntityLivingBase) null);
+	basechest.setHealth(20.0F);
+	basechest.func_152115_b(player.getUniqueID().toString());
+	basechest.worldObj.setEntityState(this, (byte) 7);
 
 	// スポーン
-	world.spawnEntityInWorld(theChest);
+	world.spawnEntityInWorld(basechest);
     }
 
 }

@@ -1,12 +1,12 @@
 package com.schr0.schr0box.livingutility.entity.chest.inventory;
 
-import com.schr0.schr0box.livingutility.entity.chest.EntityLivingChest_Base;
-
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
+
+import com.schr0.schr0box.livingutility.entity.chest.EntityLivingChest;
 
 public class EquipmentLivingChest implements IInventory
 {
@@ -18,11 +18,11 @@ public class EquipmentLivingChest implements IInventory
     // 4 : 靴装備
     public ItemStack[] containerItems = new ItemStack[5];
 
-    public EntityLivingChest_Base livingBaseChest;
+    public EntityLivingChest baseChest;
 
-    public EquipmentLivingChest(EntityLivingChest_Base par1EntityLivingChest)
+    public EquipmentLivingChest(EntityLivingChest basechest)
     {
-	this.livingBaseChest = par1EntityLivingChest;
+	this.baseChest = basechest;
     }
 
     // インベントリのSize
@@ -52,7 +52,8 @@ public class EquipmentLivingChest implements IInventory
 		itemstack = this.containerItems[par1];
 		this.containerItems[par1] = null;
 		return itemstack;
-	    } else
+	    }
+	    else
 	    {
 		itemstack = this.containerItems[par1].splitStack(par2);
 
@@ -63,7 +64,8 @@ public class EquipmentLivingChest implements IInventory
 
 		return itemstack;
 	    }
-	} else
+	}
+	else
 	{
 	    return null;
 	}
@@ -78,7 +80,8 @@ public class EquipmentLivingChest implements IInventory
 	    ItemStack itemstack = this.containerItems[par1];
 	    this.containerItems[par1] = null;
 	    return itemstack;
-	} else
+	}
+	else
 	{
 	    return null;
 	}
@@ -100,7 +103,7 @@ public class EquipmentLivingChest implements IInventory
     @Override
     public String getInventoryName()
     {
-	return this.livingBaseChest.getCommandSenderName();
+	return this.baseChest.getCommandSenderName();
     }
 
     // インベントリ名が変更可能かの判定
@@ -129,7 +132,7 @@ public class EquipmentLivingChest implements IInventory
     @Override
     public boolean isUseableByPlayer(EntityPlayer par1EntityPlayer)
     {
-	return this.livingBaseChest.isDead ? false : par1EntityPlayer.getDistanceSqToEntity(this.livingBaseChest) <= 64.0D;
+	return this.baseChest.isDead ? false : par1EntityPlayer.getDistanceSqToEntity(this.baseChest) <= 64.0D;
     }
 
     // 開く際に呼ばれる
@@ -137,9 +140,9 @@ public class EquipmentLivingChest implements IInventory
     public void openInventory()
     {
 	// 開く
-	this.livingBaseChest.setOpen(true);
+	this.baseChest.setOpen(true);
 
-	// 内部インベントリの読み込み
+	// インベントリの読み込み
 	this.load();
     }
 
@@ -148,9 +151,9 @@ public class EquipmentLivingChest implements IInventory
     public void closeInventory()
     {
 	// 閉じる
-	this.livingBaseChest.setOpen(false);
+	this.baseChest.setOpen(false);
 
-	// 内部インベントリの保存
+	// インベントリの保存
 	this.save();
     }
 
@@ -180,7 +183,7 @@ public class EquipmentLivingChest implements IInventory
 	}
 
 	// ItemStackのNBTに中身を保存
-	NBTTagCompound nbttagcompound = this.livingBaseChest.getEntityData();
+	NBTTagCompound nbttagcompound = this.baseChest.getEntityData();
 
 	if (nbttagcompound == null)
 	{
@@ -192,7 +195,7 @@ public class EquipmentLivingChest implements IInventory
 	// EntityLivingのequipmentと同期
 	for (int slot = 0; slot < this.containerItems.length; slot++)
 	{
-	    this.livingBaseChest.setCurrentItemOrArmor(slot, this.containerItems[slot]);
+	    this.baseChest.setCurrentItemOrArmor(slot, this.containerItems[slot]);
 	}
     }
 
@@ -200,7 +203,7 @@ public class EquipmentLivingChest implements IInventory
     public void load()
     {
 	// ItemStackのNBTを取得、空の中身を作成しておく
-	NBTTagCompound nbttagcompound = this.livingBaseChest.getEntityData();
+	NBTTagCompound nbttagcompound = this.baseChest.getEntityData();
 	this.containerItems = new ItemStack[this.getSizeInventory()];
 
 	// NBTが無ければ中身は空のままで
@@ -225,7 +228,7 @@ public class EquipmentLivingChest implements IInventory
 	// EntityLivingのequipmentと同期
 	for (int slot = 0; slot < this.containerItems.length; slot++)
 	{
-	    this.livingBaseChest.setCurrentItemOrArmor(slot, this.containerItems[slot]);
+	    this.baseChest.setCurrentItemOrArmor(slot, this.containerItems[slot]);
 	}
     }
 

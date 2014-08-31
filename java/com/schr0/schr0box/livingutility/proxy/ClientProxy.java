@@ -1,13 +1,9 @@
 package com.schr0.schr0box.livingutility.proxy;
 
-import com.schr0.schr0box.livingutility.entity.chest.EntityLivingChestEnder_Collect;
-import com.schr0.schr0box.livingutility.entity.chest.EntityLivingChestEnder_Follow;
-import com.schr0.schr0box.livingutility.entity.chest.EntityLivingChest_Collect;
-import com.schr0.schr0box.livingutility.entity.chest.EntityLivingChest_Follow;
-import com.schr0.schr0box.livingutility.entity.chest.renderer.RenderLivingChestEnder_Collect;
-import com.schr0.schr0box.livingutility.entity.chest.renderer.RenderLivingChestEnder_Follow;
-import com.schr0.schr0box.livingutility.entity.chest.renderer.RenderLivingChest_Collect;
-import com.schr0.schr0box.livingutility.entity.chest.renderer.RenderLivingChest_Follow;
+import com.schr0.schr0box.livingutility.entity.chest.EntityLivingChest_Ender;
+import com.schr0.schr0box.livingutility.entity.chest.EntityLivingChest_Normal;
+import com.schr0.schr0box.livingutility.entity.chest.renderer.RenderLivingChest;
+import com.schr0.schr0box.livingutility.entity.chest.renderer.RenderLivingChestEnder;
 
 import cpw.mods.fml.client.registry.RenderingRegistry;
 import cpw.mods.fml.relauncher.Side;
@@ -19,11 +15,9 @@ public class ClientProxy extends ServerProxy
     @Override
     public void registerClient()
     {
-	// Entityのクラスと描画, モデルを結びつける //
-	RenderingRegistry.registerEntityRenderingHandler(EntityLivingChest_Follow.class, new RenderLivingChest_Follow());
-	RenderingRegistry.registerEntityRenderingHandler(EntityLivingChest_Collect.class, new RenderLivingChest_Collect());
-        //EnderChest登録
-        RenderingRegistry.registerEntityRenderingHandler(EntityLivingChestEnder_Follow.class, new RenderLivingChestEnder_Follow());
-        RenderingRegistry.registerEntityRenderingHandler(EntityLivingChestEnder_Collect.class, new RenderLivingChestEnder_Collect());
+	// EntityとRenderを結びつける
+	// RenderingRegistry.registerEntityRenderingHandler( class(Entity), Render);
+	RenderingRegistry.registerEntityRenderingHandler(EntityLivingChest_Normal.class, new RenderLivingChest());
+	RenderingRegistry.registerEntityRenderingHandler(EntityLivingChest_Ender.class, new RenderLivingChestEnder());
     }
 }
